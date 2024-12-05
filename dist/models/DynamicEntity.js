@@ -42,6 +42,19 @@ const dynamicEntitySchema = new mongoose_1.default.Schema({
         required: true,
         unique: true,
     },
+    displayName: {
+        type: String,
+        required: true,
+    },
+    group: {
+        type: mongoose_1.default.Schema.Types.ObjectId,
+        ref: "EntityGroup",
+        required: true,
+    },
+    order: {
+        type: Number,
+        default: 0,
+    },
     fields: [
         {
             name: String,
@@ -50,7 +63,7 @@ const dynamicEntitySchema = new mongoose_1.default.Schema({
                 enum: ["String", "Number", "Date", "Boolean", "ObjectId"],
             },
             required: Boolean,
-            reference: String, // For ObjectId types, store the referenced model name
+            reference: String,
         },
     ],
     createdBy: {
@@ -58,12 +71,21 @@ const dynamicEntitySchema = new mongoose_1.default.Schema({
         ref: "User",
         required: true,
     },
+    deletedAt: {
+        type: Date,
+        default: null,
+    },
 }, {
     timestamps: true,
 });
+// Índice composto para ordenação
+dynamicEntitySchema.index({ group: 1, order: 1 });
+dynamicEntitySchema.index({ deletedAt: 1 });
 // Function to create a dynamic model based on entity definition
 const createDynamicModel = (entity) => {
-    const schemaFields = {};
+    const schemaFields = {
+        deletedAt: { type: Date, default: null },
+    };
     entity.fields.forEach((field) => {
         const SchemaTypes = {
             String: String,
@@ -72,9 +94,18 @@ const createDynamicModel = (entity) => {
             Boolean: Boolean,
             ObjectId: mongoose_1.default.Schema.Types.ObjectId,
         };
-        schemaFields[field.name] = { type: SchemaTypes[field.type] };
+        if (field.type === "ObjectId" && field.reference) {
+            schemaFields[field.name] = {
+                type: SchemaTypes[field.type],
+                ref: field.reference,
+            };
+        }
+        else {
+            schemaFields[field.name] = { type: SchemaTypes[field.type] };
+        }
     });
-    const dynamicSchema = new mongoose_1.Schema(schemaFields);
+    const dynamicSchema = new mongoose_1.Schema(schemaFields, { timestamps: true });
+    dynamicSchema.index({ deletedAt: 1 });
     return mongoose_1.default.model(entity.name, dynamicSchema);
 };
 exports.createDynamicModel = createDynamicModel;

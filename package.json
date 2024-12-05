@@ -5,8 +5,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node dist/app.js",
-    "build": "tsc",
-    "dev": "tsc && node dist/app.js"
+    "build": "tsoa spec-and-routes && tsc",
+    "dev": "tsoa spec-and-routes && tsc && node dist/app.js"
   },
   "keywords": [],
   "author": "",
@@ -20,7 +20,9 @@
     "express-validator": "^7.2.0",
     "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.8.3"
+    "mongoose": "^8.8.3",
+    "swagger-ui-express": "^5.0.1",
+    "tsoa": "^5.1.1"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
@@ -29,6 +31,7 @@
     "@types/jsonwebtoken": "^9.0.7",
     "@types/mongoose": "^5.11.96",
     "@types/node": "^22.10.1",
+    "@types/swagger-ui-express": "^4.1.7",
     "typescript": "^5.7.2"
   }
 }
