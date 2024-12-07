@@ -300,6 +300,7 @@ export function RegisterRoutes(app: Router) {
                     sortBy: {"in":"query","name":"sortBy","dataType":"string"},
                     sortOrder: {"in":"query","name":"sortOrder","dataType":"union","subSchemas":[{"dataType":"enum","enums":["asc"]},{"dataType":"enum","enums":["desc"]}]},
                     filters: {"in":"query","name":"filters","dataType":"string"},
+                    referencedBy: {"in":"query","name":"referencedBy","dataType":"string"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa

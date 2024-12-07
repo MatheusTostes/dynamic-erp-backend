@@ -8,6 +8,7 @@ import entityRoutes from "./routes/entityManagementRoutes";
 import recordRoutes from "./routes/recordManagementRoutes";
 import entityGroupRoutes from "./routes/entityGroupRoutes";
 import swaggerUi from "swagger-ui-express";
+import { swaggerOptions, configureSwaggerDocument } from "./config/swagger";
 
 dotenv.config();
 
@@ -37,8 +38,15 @@ app.use("/api/entity-groups", entityGroupRoutes);
 // Importa o arquivo de especificação gerado pelo tsoa
 import swaggerDocument from "../public/swagger.json";
 
+// Configura o documento do swagger
+const configuredSwaggerDocument = configureSwaggerDocument(swaggerDocument);
+
 // Configura a rota para a documentação
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(configuredSwaggerDocument, swaggerOptions)
+);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

@@ -592,6 +592,14 @@
 						"schema": {
 							"type": "string"
 						}
+					},
+					{
+						"in": "query",
+						"name": "referencedBy",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
 					}
 				]
 			}

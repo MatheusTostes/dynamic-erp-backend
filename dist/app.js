@@ -13,6 +13,7 @@ const entityManagementRoutes_1 = __importDefault(require("./routes/entityManagem
 const recordManagementRoutes_1 = __importDefault(require("./routes/recordManagementRoutes"));
 const entityGroupRoutes_1 = __importDefault(require("./routes/entityGroupRoutes"));
 const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
+const swagger_1 = require("./config/swagger");
 dotenv_1.default.config();
 console.log("app NODE_ENV:", process.env.NODE_ENV);
 const app = (0, express_1.default)();
@@ -32,8 +33,10 @@ app.use("/api/entities", recordManagementRoutes_1.default);
 app.use("/api/entity-groups", entityGroupRoutes_1.default);
 // Importa o arquivo de especificação gerado pelo tsoa
 const swagger_json_1 = __importDefault(require("../public/swagger.json"));
+// Configura o documento do swagger
+const configuredSwaggerDocument = (0, swagger_1.configureSwaggerDocument)(swagger_json_1.default);
 // Configura a rota para a documentação
-app.use("/api-docs", swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swagger_json_1.default));
+app.use("/api-docs", swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(configuredSwaggerDocument, swagger_1.swaggerOptions));
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);

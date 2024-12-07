@@ -1,13 +1,11 @@
 {
   "entryFile": "src/app.ts",
-  "noImplicitAdditionalProperties": "throw-on-extras",
-  "controllerPathGlobs": ["src/controllers/*.ts"],
+  "controllerPathGlobs": ["src/**/*Controller.ts"],
   "spec": {
-    "outputDirectory": "public",
+    "outputDirectory": "build",
     "specVersion": 3
   },
   "routes": {
-    "routesDir": "src/routes",
-    "middleware": "express"
+    "routesDir": "build"
   }
 }
