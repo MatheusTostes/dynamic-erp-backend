@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import User from "../models/User";
+import { User as UserModel } from "../models/User";
 import { AuthCredentials, AuthResponse } from "../types/authInterfaces";
 
 export class AuthService {
@@ -13,7 +13,7 @@ export class AuthService {
   public async login(credentials: AuthCredentials): Promise<AuthResponse> {
     const { email, password } = credentials;
 
-    const user = await User.findOne({ email });
+    const user = await UserModel.findOne({ email });
     if (!user) {
       throw new Error("Invalid credentials");
     }

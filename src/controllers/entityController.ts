@@ -11,7 +11,13 @@ import {
   Put,
 } from "tsoa";
 import { EntityService } from "../services/entityService";
-import { Entity, EntityResponse } from "../types/entityInterfaces";
+import {
+  CreateEntityResponse,
+  Entity,
+  EntityResponse,
+  UniqueEntityResponse,
+} from "../types/entityInterfaces";
+import { errorHandler, successHandler } from "../libs/responseHandler";
 
 @Route("entities")
 @Tags("Entities")
@@ -24,46 +30,51 @@ export class EntityController extends Controller {
   }
 
   @Get("/")
-  @Response<EntityResponse>(200, "Success")
+  @Response(200, "Success")
   public async getEntities(): Promise<EntityResponse> {
-    return this.entityService.getEntities();
+    const entities = await this.entityService.findAll();
+    return successHandler(entities);
   }
 
   @Post("/")
-  @Response<EntityResponse>(201, "Created")
+  @Response(201, "Created")
   @Response(409, "Entity already exists")
   public async createEntity(
-    @Body() requestBody: Entity
-  ): Promise<EntityResponse> {
+    @Body() body: Entity
+  ): Promise<CreateEntityResponse> {
     try {
-      return await this.entityService.createEntity(requestBody);
+      const entity = await this.entityService.createEntity(body);
+      return successHandler(entity);
     } catch (error) {
-      if (error instanceof Error && error.message.includes("already exists")) {
-        this.setStatus(409);
-        return {
-          success: false,
-          data: [],
-          message: error.message,
-        };
-      }
-      throw error;
+      this.setStatus(409);
+      return errorHandler(error);
     }
   }
 
-  @Delete("/{name}")
-  @Response<{ success: boolean; message: string }>(200, "Deleted")
-  public async deleteEntity(
-    @Path() name: string
-  ): Promise<{ success: boolean; message: string }> {
-    return this.entityService.deleteEntity(name);
+  @Put("/{entityId}")
+  @Response(200, "Updated")
+  @Response(404, "Not Found")
+  public async updateEntity(
+    entityId: string,
+    @Body() body: Entity
+  ): Promise<UniqueEntityResponse> {
+    const entity = await this.entityService.updateEntity(entityId, body);
+    if (!entity) {
+      this.setStatus(404);
+      return errorHandler("Entity not found");
+    }
+    return successHandler(entity);
   }
 
-  @Put("/{name}")
-  @Response<EntityResponse>(200, "Updated")
-  public async updateEntity(
-    @Path() name: string,
-    @Body() requestBody: Entity
-  ): Promise<EntityResponse> {
-    return this.entityService.updateEntity(name, requestBody);
+  @Delete("/{entityId}")
+  @Response(200, "Deleted")
+  @Response(404, "Not Found")
+  public async deleteEntity(entityId: string): Promise<UniqueEntityResponse> {
+    const entity = await this.entityService.deleteEntity(entityId);
+    if (!entity) {
+      this.setStatus(404);
+      return errorHandler("Entity not found");
+    }
+    return successHandler(entity);
   }
 }

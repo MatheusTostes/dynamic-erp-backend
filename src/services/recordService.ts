@@ -2,10 +2,10 @@ import mongoose from "mongoose";
 import { DynamicEntity, createDynamicModel } from "../models/DynamicEntity";
 import {
   Record,
-  RecordResponse,
-  PaginatedResponse,
   QueryOptions,
+  PaginatedRecordResponse,
 } from "../types/recordInterfaces";
+import { Entity } from "../types/entityInterfaces";
 
 export class RecordService {
   private async getDynamicModel(entityName: string) {
@@ -31,21 +31,21 @@ export class RecordService {
   public async createRecord(
     entityName: string,
     recordData: Record
-  ): Promise<RecordResponse> {
+  ): Promise<Record> {
     const { DynamicModel } = await this.getDynamicModel(entityName);
     const record = await DynamicModel.create(recordData);
 
-    return {
-      success: true,
-      data: record,
-    };
+    return record;
   }
 
   public async getRecords(
     entityName: string,
     options: QueryOptions
-  ): Promise<PaginatedResponse> {
+  ): Promise<PaginatedRecordResponse> {
     const { DynamicModel, entity } = await this.getDynamicModel(entityName);
+    const page = options.paginationPage || 1;
+    const pageSize = options.paginationSize || 10;
+    const skip = (page - 1) * pageSize;
 
     if (options.referencedBy) {
       return this.getReferencedRecords(entityName, options.referencedBy);
@@ -73,53 +73,58 @@ export class RecordService {
       }
     }
 
-    const filter = await this.buildFilter(entity, options.filters);
+    const filter = await this.buildFilter(
+      this.mapEntityToResponse(entity),
+      options.filters
+    );
 
     const sort = this.buildSort(options.sortBy, options.sortOrder);
-    const { skip, limit } = this.getPaginationParams(options);
 
-    const total = await DynamicModel.countDocuments(filter);
-    const records = await DynamicModel.find(filter)
-      .sort(sort)
-      .skip(skip)
-      .limit(limit);
+    const [records, total] = await Promise.all([
+      DynamicModel.find(filter).sort(sort).skip(skip).limit(pageSize),
+      DynamicModel.countDocuments(filter),
+    ]);
 
-    return this.buildPaginatedResponse(records, total, options);
+    return {
+      data: records,
+      pagination: {
+        total,
+        page,
+        pageSize,
+        totalPages: Math.ceil(total / pageSize),
+        hasNextPage: page * pageSize < total,
+        hasPreviousPage: page > 1,
+      },
+    };
   }
 
   public async updateRecord(
     entityName: string,
     recordId: string,
     recordData: Record
-  ): Promise<RecordResponse> {
+  ): Promise<Record> {
     const { DynamicModel } = await this.getDynamicModel(entityName);
     const record = await DynamicModel.findByIdAndUpdate(recordId, recordData, {
       new: true,
     });
 
-    return {
-      success: true,
-      data: record,
-    };
+    return record;
   }
 
   public async deleteRecord(
     entityName: string,
     recordId: string
-  ): Promise<{ success: boolean; message: string }> {
+  ): Promise<Record> {
     const { DynamicModel } = await this.getDynamicModel(entityName);
-    await DynamicModel.findByIdAndDelete(recordId);
+    const record = await DynamicModel.findByIdAndDelete(recordId);
 
-    return {
-      success: true,
-      message: "Record deleted successfully",
-    };
+    return record;
   }
 
   private async getReferencedRecords(
     entityName: string,
     referencedBy: string
-  ): Promise<PaginatedResponse> {
+  ): Promise<PaginatedRecordResponse> {
     const entity = await DynamicEntity.findOne({
       name: entityName,
       deletedAt: null,
@@ -154,10 +159,7 @@ export class RecordService {
     });
 
     return {
-      data: references.map((ref) => ({
-        success: true,
-        data: ref,
-      })),
+      data: references,
       pagination: {
         total: references.length,
         page: 1,
@@ -169,8 +171,8 @@ export class RecordService {
     };
   }
 
-  private async buildFilter(entity: any, filters?: string) {
-    const filter: { [key: string]: any } = { deletedAt: null };
+  private async buildFilter(entity: Entity, filters?: string) {
+    const filter: { [key: string]: unknown } = { deletedAt: null };
 
     if (!filters) {
       return filter;
@@ -226,35 +228,11 @@ export class RecordService {
       : {};
   }
 
-  private getPaginationParams(options: QueryOptions) {
-    const page = options.paginationPage || 1;
-    const limit = options.paginationSize || 10;
-    const skip = (page - 1) * limit;
-    return { skip, limit, page };
-  }
-
-  private buildPaginatedResponse(
-    records: any[],
-    total: number,
-    options: QueryOptions
-  ): PaginatedResponse {
-    const page = options.paginationPage || 1;
-    const pageSize = options.paginationSize || 10;
-    const totalPages = Math.ceil(total / pageSize);
-
+  private mapEntityToResponse(entity: any): Entity {
     return {
-      data: records.map((record) => ({
-        success: true,
-        data: record,
-      })),
-      pagination: {
-        total,
-        page,
-        pageSize,
-        totalPages,
-        hasNextPage: page < totalPages,
-        hasPreviousPage: page > 1,
-      },
+      ...entity.toObject(),
+      id: entity._id.toString(),
+      group: entity.group.toString(),
     };
   }
 }

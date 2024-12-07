@@ -15,9 +15,12 @@ import {
 import {
   Record,
   RecordResponse,
-  PaginatedResponse,
+  CreateRecordResponse,
+  UniqueRecordResponse,
+  PaginatedRecordResponse,
 } from "../types/recordInterfaces";
 import { RecordService } from "../services/recordService";
+import { errorHandler, successHandler } from "../libs/responseHandler";
 
 @Route("entities/{entityName}/records")
 @Tags("Records")
@@ -29,17 +32,8 @@ export class RecordController extends Controller {
     this.recordService = new RecordService();
   }
 
-  @Post("/")
-  @Response<RecordResponse>(201, "Record created")
-  public async createRecord(
-    @Path() entityName: string,
-    @Body() requestBody: Record
-  ): Promise<RecordResponse> {
-    return this.recordService.createRecord(entityName, requestBody);
-  }
-
   @Get("/")
-  @Response<PaginatedResponse>(200, "List all records")
+  @Response(200, "Success")
   public async getRecords(
     @Path() entityName: string,
     @Request() request: any,
@@ -49,34 +43,73 @@ export class RecordController extends Controller {
     @Query() sortOrder?: "asc" | "desc",
     @Query() filters?: string,
     @Query() referencedBy?: string
-  ): Promise<PaginatedResponse> {
-    return this.recordService.getRecords(entityName, {
-      ...request.query,
-      paginationPage,
-      paginationSize,
-      sortBy,
-      sortOrder,
-      filters,
-      referencedBy,
-    });
+  ): Promise<PaginatedRecordResponse> {
+    const { data, pagination } = await this.recordService.getRecords(
+      entityName,
+      {
+        ...request.query,
+        paginationPage,
+        paginationSize,
+        sortBy,
+        sortOrder,
+        filters,
+        referencedBy,
+      }
+    );
+    return successHandler(data, pagination);
+  }
+
+  @Post("/")
+  @Response(201, "Created")
+  @Response(409, "Record already exists")
+  public async createRecord(
+    @Path() entityName: string,
+    @Body() requestBody: Record
+  ): Promise<CreateRecordResponse> {
+    try {
+      const record = await this.recordService.createRecord(
+        entityName,
+        requestBody
+      );
+      return successHandler(record);
+    } catch (error) {
+      this.setStatus(409);
+      return errorHandler(error);
+    }
   }
 
   @Put("/{recordId}")
-  @Response<RecordResponse>(200, "Record updated")
+  @Response(200, "Updated")
+  @Response(404, "Record not found")
   public async updateRecord(
     @Path() entityName: string,
     @Path() recordId: string,
     @Body() requestBody: Record
-  ): Promise<RecordResponse> {
-    return this.recordService.updateRecord(entityName, recordId, requestBody);
+  ): Promise<UniqueRecordResponse> {
+    const record = await this.recordService.updateRecord(
+      entityName,
+      recordId,
+      requestBody
+    );
+    if (!record) {
+      this.setStatus(404);
+      return errorHandler("Record not found");
+    }
+    return successHandler(record);
   }
 
   @Delete("/{recordId}")
-  @Response<{ success: boolean; message: string }>(200, "Record deleted")
+  @Response(200, "Deleted")
+  @Response(404, "Not Found")
   public async deleteRecord(
     @Path() entityName: string,
     @Path() recordId: string
-  ): Promise<{ success: boolean; message: string }> {
-    return this.recordService.deleteRecord(entityName, recordId);
+  ): Promise<UniqueRecordResponse> {
+    const record = await this.recordService.deleteRecord(entityName, recordId);
+    if (!record) {
+      this.setStatus(404);
+      return errorHandler("Record not found");
+    }
+    return successHandler(record);
   }
 }

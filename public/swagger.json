@@ -99,53 +99,11 @@
 				"type": "object",
 				"additionalProperties": true
 			},
-			"EntityResponse": {
-				"properties": {
-					"success": {
-						"type": "boolean"
-					},
-					"data": {
-						"items": {
-							"properties": {
-								"fields": {
-									"items": {
-										"$ref": "#/components/schemas/EntityField"
-									},
-									"type": "array"
-								},
-								"group": {
-									"type": "string"
-								},
-								"displayName": {
-									"type": "string"
-								},
-								"name": {
-									"type": "string"
-								}
-							},
-							"required": [
-								"fields",
-								"group",
-								"displayName",
-								"name"
-							],
-							"type": "object"
-						},
-						"type": "array"
-					},
-					"message": {
-						"type": "string"
-					}
-				},
-				"required": [
-					"success",
-					"data"
-				],
-				"type": "object",
-				"additionalProperties": true
-			},
 			"Entity": {
 				"properties": {
+					"id": {
+						"type": "string"
+					},
 					"name": {
 						"type": "string"
 					},
@@ -174,6 +132,76 @@
 					"displayName",
 					"group",
 					"fields"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"EntityResponse": {
+				"properties": {
+					"success": {
+						"type": "boolean"
+					},
+					"data": {
+						"items": {
+							"$ref": "#/components/schemas/Entity"
+						},
+						"type": "array"
+					},
+					"message": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"success",
+					"data"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"CreateEntityResponse": {
+				"properties": {
+					"success": {
+						"type": "boolean"
+					},
+					"data": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/Entity"
+							}
+						],
+						"nullable": true
+					},
+					"message": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"success",
+					"data"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"UniqueEntityResponse": {
+				"properties": {
+					"success": {
+						"type": "boolean"
+					},
+					"data": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/Entity"
+							}
+						],
+						"nullable": true
+					},
+					"message": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"success",
+					"data"
 				],
 				"type": "object",
 				"additionalProperties": true
@@ -215,7 +243,13 @@
 						"type": "boolean"
 					},
 					"data": {
-						"$ref": "#/components/schemas/EntityGroup"
+						"items": {
+							"$ref": "#/components/schemas/EntityGroup"
+						},
+						"type": "array"
+					},
+					"message": {
+						"type": "string"
 					}
 				},
 				"required": [
@@ -225,8 +259,59 @@
 				"type": "object",
 				"additionalProperties": true
 			},
-			"CreateGroupDTO": {
+			"CreateGroupResponse": {
 				"properties": {
+					"success": {
+						"type": "boolean"
+					},
+					"data": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/EntityGroup"
+							}
+						],
+						"nullable": true
+					},
+					"message": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"success",
+					"data"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"UniqueGroupResponse": {
+				"properties": {
+					"success": {
+						"type": "boolean"
+					},
+					"data": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/EntityGroup"
+							}
+						],
+						"nullable": true
+					},
+					"message": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"success",
+					"data"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"Partial_EntityGroup_": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
 					"name": {
 						"type": "string"
 					},
@@ -236,14 +321,18 @@
 					"order": {
 						"type": "number",
 						"format": "double"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
 					}
 				},
-				"required": [
-					"name",
-					"displayName"
-				],
 				"type": "object",
-				"additionalProperties": true
+				"description": "Make all properties in T optional"
 			},
 			"Record": {
 				"properties": {},
@@ -257,6 +346,9 @@
 					},
 					"data": {
 						"$ref": "#/components/schemas/Record"
+					},
+					"message": {
+						"type": "string"
 					}
 				},
 				"required": [
@@ -266,7 +358,7 @@
 				"type": "object",
 				"additionalProperties": true
 			},
-			"PaginatedResponse": {
+			"PaginatedRecordResponse": {
 				"properties": {
 					"data": {
 						"items": {
@@ -274,6 +366,9 @@
 						},
 						"type": "array"
 					},
+					"message": {
+						"type": "string"
+					},
 					"pagination": {
 						"properties": {
 							"hasPreviousPage": {
@@ -317,44 +412,93 @@
 				"type": "object",
 				"additionalProperties": true
 			},
-			"Types.ObjectId": {
-				"type": "string"
-			},
-			"FlattenMaps_Require_id_DocType__": {
+			"CreateRecordResponse": {
 				"properties": {
-					"_id": {
-						"$ref": "#/components/schemas/Types.ObjectId"
-					}
-				},
-				"required": [
-					"_id"
-				],
-				"type": "object"
-			},
-			"IUser": {
-				"$ref": "#/components/schemas/FlattenMaps_Require_id_DocType__"
-			},
-			"CreateUserDto": {
-				"properties": {
-					"email": {
-						"type": "string"
+					"success": {
+						"type": "boolean"
 					},
-					"name": {
+					"data": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/Record"
+							}
+						],
+						"nullable": true
+					},
+					"message": {
 						"type": "string"
 					}
 				},
 				"required": [
-					"email",
-					"name"
+					"success",
+					"data"
 				],
 				"type": "object",
 				"additionalProperties": true
 			},
+			"UniqueRecordResponse": {
+				"properties": {
+					"success": {
+						"type": "boolean"
+					},
+					"data": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/Record"
+							}
+						],
+						"nullable": true
+					},
+					"message": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"success",
+					"data"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"Pick_User.Exclude_keyofUser.password__": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"email": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"name",
+					"email"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"Omit_User.password_": {
+				"$ref": "#/components/schemas/Pick_User.Exclude_keyofUser.password__",
+				"description": "Construct a type with the properties of T except for those in type K."
+			},
 			"PaginatedUserResponse": {
 				"properties": {
+					"success": {
+						"type": "boolean"
+					},
 					"data": {
 						"items": {
-							"$ref": "#/components/schemas/IUser"
+							"$ref": "#/components/schemas/Omit_User.password_"
 						},
 						"type": "array"
 					},
@@ -392,24 +536,93 @@
 							"total"
 						],
 						"type": "object"
+					},
+					"message": {
+						"type": "string"
 					}
 				},
 				"required": [
-					"data",
-					"pagination"
+					"data"
 				],
 				"type": "object",
 				"additionalProperties": true
 			},
-			"UpdateUserDto": {
+			"UniqueUserResponse": {
 				"properties": {
+					"success": {
+						"type": "boolean"
+					},
+					"data": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/Omit_User.password_"
+							}
+						],
+						"nullable": true
+					},
+					"message": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"success",
+					"data"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"CreateUserResponse": {
+				"properties": {
+					"success": {
+						"type": "boolean"
+					},
+					"data": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/Omit_User.password_"
+							}
+						],
+						"nullable": true
+					},
+					"message": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"success",
+					"data"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"User": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
 					"email": {
+						"type": "string"
+					},
+					"password": {
 						"type": "string"
 					},
 					"name": {
 						"type": "string"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
 					}
 				},
+				"required": [
+					"email",
+					"password",
+					"name"
+				],
 				"type": "object",
 				"additionalProperties": true
 			}
@@ -487,20 +700,13 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/EntityResponse"
+									"$ref": "#/components/schemas/CreateEntityResponse"
 								}
 							}
 						}
 					},
 					"201": {
-						"description": "Created",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/EntityResponse"
-								}
-							}
-						}
+						"description": "Created"
 					},
 					"409": {
 						"description": "Entity already exists"
@@ -523,48 +729,7 @@
 				}
 			}
 		},
-		"/entities/{name}": {
-			"delete": {
-				"operationId": "DeleteEntity",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"properties": {
-										"message": {
-											"type": "string"
-										},
-										"success": {
-											"type": "boolean"
-										}
-									},
-									"required": [
-										"message",
-										"success"
-									],
-									"type": "object"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Entities"
-				],
-				"security": [],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "name",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				]
-			},
+		"/entities/{entityId}": {
 			"put": {
 				"operationId": "UpdateEntity",
 				"responses": {
@@ -573,10 +738,13 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/EntityResponse"
+									"$ref": "#/components/schemas/UniqueEntityResponse"
 								}
 							}
 						}
+					},
+					"404": {
+						"description": "Not Found"
 					}
 				},
 				"tags": [
@@ -586,7 +754,7 @@
 				"parameters": [
 					{
 						"in": "path",
-						"name": "name",
+						"name": "entityId",
 						"required": true,
 						"schema": {
 							"type": "string"
@@ -603,6 +771,38 @@
 						}
 					}
 				}
+			},
+			"delete": {
+				"operationId": "DeleteEntity",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/UniqueEntityResponse"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Not Found"
+					}
+				},
+				"tags": [
+					"Entities"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "entityId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
 			}
 		},
 		"/entity-groups": {
@@ -634,20 +834,16 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/EntityGroupResponse"
+									"$ref": "#/components/schemas/CreateGroupResponse"
 								}
 							}
 						}
 					},
 					"201": {
-						"description": "Created",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/EntityGroupResponse"
-								}
-							}
-						}
+						"description": "Created"
+					},
+					"409": {
+						"description": "Entity group already exists"
 					}
 				},
 				"tags": [
@@ -660,46 +856,46 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/CreateGroupDTO"
+								"$ref": "#/components/schemas/EntityGroup"
 							}
 						}
 					}
 				}
 			}
 		},
-		"/entities/{entityName}/records": {
-			"post": {
-				"operationId": "CreateRecord",
+		"/entity-groups/{groupId}": {
+			"put": {
+				"operationId": "UpdateGroup",
 				"responses": {
 					"200": {
 						"description": "Ok",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/RecordResponse"
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/CreateGroupResponse"
+										},
+										{
+											"$ref": "#/components/schemas/UniqueGroupResponse"
+										}
+									]
 								}
 							}
 						}
 					},
-					"201": {
-						"description": "Record created",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/RecordResponse"
-								}
-							}
-						}
+					"404": {
+						"description": "Not Found"
 					}
 				},
 				"tags": [
-					"Records"
+					"Groups"
 				],
 				"security": [],
 				"parameters": [
 					{
 						"in": "path",
-						"name": "entityName",
+						"name": "groupId",
 						"required": true,
 						"schema": {
 							"type": "string"
@@ -711,12 +907,46 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/Record"
+								"$ref": "#/components/schemas/Partial_EntityGroup_"
 							}
 						}
 					}
 				}
 			},
+			"delete": {
+				"operationId": "DeleteGroup",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/UniqueGroupResponse"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Not Found"
+					}
+				},
+				"tags": [
+					"Groups"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "groupId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/entities/{entityName}/records": {
 			"get": {
 				"operationId": "GetRecords",
 				"responses": {
@@ -725,7 +955,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/PaginatedResponse"
+									"$ref": "#/components/schemas/PaginatedRecordResponse"
 								}
 							}
 						}
@@ -799,6 +1029,51 @@
 						}
 					}
 				]
+			},
+			"post": {
+				"operationId": "CreateRecord",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/CreateRecordResponse"
+								}
+							}
+						}
+					},
+					"201": {
+						"description": "Created"
+					},
+					"409": {
+						"description": "Record already exists"
+					}
+				},
+				"tags": [
+					"Records"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "entityName",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Record"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/entities/{entityName}/records/{recordId}": {
@@ -810,10 +1085,13 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/RecordResponse"
+									"$ref": "#/components/schemas/UniqueRecordResponse"
 								}
 							}
 						}
+					},
+					"404": {
+						"description": "Record not found"
 					}
 				},
 				"tags": [
@@ -857,22 +1135,13 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"properties": {
-										"message": {
-											"type": "string"
-										},
-										"success": {
-											"type": "boolean"
-										}
-									},
-									"required": [
-										"message",
-										"success"
-									],
-									"type": "object"
+									"$ref": "#/components/schemas/UniqueRecordResponse"
 								}
 							}
 						}
+					},
+					"404": {
+						"description": "Not Found"
 					}
 				},
 				"tags": [
@@ -900,46 +1169,6 @@
 			}
 		},
 		"/users": {
-			"post": {
-				"operationId": "CreateUser",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/IUser"
-								}
-							}
-						}
-					},
-					"201": {
-						"description": "Created",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/IUser"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Users"
-				],
-				"security": [],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/CreateUserDto"
-							}
-						}
-					}
-				}
-			},
 			"get": {
 				"operationId": "GetAllUsers",
 				"responses": {
@@ -959,6 +1188,42 @@
 				],
 				"security": [],
 				"parameters": []
+			},
+			"post": {
+				"operationId": "CreateUser",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/CreateUserResponse"
+								}
+							}
+						}
+					},
+					"201": {
+						"description": "Created"
+					},
+					"409": {
+						"description": "User already exists"
+					}
+				},
+				"tags": [
+					"Users"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/User"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/users/{userId}": {
@@ -970,10 +1235,13 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/IUser"
+									"$ref": "#/components/schemas/UniqueUserResponse"
 								}
 							}
 						}
+					},
+					"404": {
+						"description": "Not Found"
 					}
 				},
 				"tags": [
@@ -999,10 +1267,13 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/IUser"
+									"$ref": "#/components/schemas/UniqueUserResponse"
 								}
 							}
 						}
+					},
+					"404": {
+						"description": "Not Found"
 					}
 				},
 				"tags": [
@@ -1024,7 +1295,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/UpdateUserDto"
+								"$ref": "#/components/schemas/User"
 							}
 						}
 					}
@@ -1033,8 +1304,18 @@
 			"delete": {
 				"operationId": "DeleteUser",
 				"responses": {
-					"204": {
-						"description": "No content"
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/UniqueUserResponse"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Not Found"
 					}
 				},
 				"tags": [

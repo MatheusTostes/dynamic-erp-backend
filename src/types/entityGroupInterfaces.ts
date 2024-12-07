@@ -9,18 +9,18 @@ export interface EntityGroup {
 
 export interface EntityGroupResponse {
   success: boolean;
-  data: EntityGroup;
+  data: EntityGroup[];
+  message?: string;
 }
 
-export interface CreateGroupDTO {
-  name: string;
-  displayName: string;
-  order?: number;
+export interface UniqueGroupResponse {
+  success: boolean;
+  data: EntityGroup | null;
+  message?: string;
 }
 
-export interface AuthRequest extends Request {
-  user?: {
-    _id: string;
-    [key: string]: any;
-  };
+export interface CreateGroupResponse {
+  success: boolean;
+  data: EntityGroup | null;
+  message?: string;
 }

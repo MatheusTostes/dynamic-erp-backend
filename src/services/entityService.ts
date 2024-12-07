@@ -1,23 +1,21 @@
 import { DynamicEntity } from "../models/DynamicEntity";
-import { Entity, EntityResponse } from "../types/entityInterfaces";
+import {
+  CreateEntityResponse,
+  Entity,
+  EntityResponse,
+} from "../types/entityInterfaces";
 import mongoose from "mongoose";
 
 export class EntityService {
-  public async getEntities(): Promise<EntityResponse> {
+  public async findAll(): Promise<Entity[]> {
     const entities = await DynamicEntity.find({ deletedAt: null })
       .populate("group")
       .sort({ "group.order": 1, order: 1 });
 
-    return {
-      success: true,
-      data: this.mapEntitiesToResponse(entities),
-    };
+    return this.mapEntitiesToResponse(entities);
   }
 
-  public async createEntity(
-    entity: Entity,
-    userId?: string
-  ): Promise<EntityResponse> {
+  public async createEntity(entity: Entity, userId?: string): Promise<Entity> {
     const existingEntity = await DynamicEntity.findOne({
       name: entity.name,
     });
@@ -44,32 +42,32 @@ export class EntityService {
       }
     );
 
-    return {
-      success: true,
-      data: this.mapEntitiesToResponse(newEntity),
-    };
+    return this.mapEntitiesToResponse([newEntity[0]])[0];
   }
 
-  public async deleteEntity(
-    name: string
-  ): Promise<{ success: boolean; message: string }> {
+  public async deleteEntity(entityId: string): Promise<Entity> {
+    const entity = await DynamicEntity.findOne({
+      id: entityId,
+      deletedAt: null,
+    });
+    if (!entity) {
+      throw new Error("Entity not found");
+    }
+
     await DynamicEntity.findOneAndUpdate(
-      { name, deletedAt: null },
+      { entityId, deletedAt: null },
       { deletedAt: new Date() }
     );
 
-    return {
-      success: true,
-      message: "Entity deleted successfully",
-    };
+    const EntityModel = mongoose.model(entityId);
+    await EntityModel.deleteMany({});
+
+    return this.mapEntitiesToResponse([entity])[0];
   }
 
-  public async updateEntity(
-    name: string,
-    entity: Entity
-  ): Promise<EntityResponse> {
+  public async updateEntity(entityId: string, entity: Entity): Promise<Entity> {
     const updatedEntity = await DynamicEntity.findOneAndUpdate(
-      { name, deletedAt: null },
+      { id: entityId, deletedAt: null },
       { ...entity },
       { new: true }
     ).populate("group");
@@ -78,10 +76,7 @@ export class EntityService {
       throw new Error("Entity not found");
     }
 
-    return {
-      success: true,
-      data: this.mapEntitiesToResponse([updatedEntity]),
-    };
+    return this.mapEntitiesToResponse([updatedEntity])[0];
   }
 
   private mapEntitiesToResponse(entities: any[]): any[] {

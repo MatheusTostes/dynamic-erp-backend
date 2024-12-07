@@ -1,5 +1,9 @@
 import mongoose from "mongoose";
 
+interface Context {
+  user?: { _id: string };
+}
+
 const entityGroupSchema = new mongoose.Schema(
   {
     name: {
@@ -18,7 +22,7 @@ const entityGroupSchema = new mongoose.Schema(
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      required: false,
     },
     deletedAt: {
       type: Date,
@@ -29,6 +33,14 @@ const entityGroupSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+entityGroupSchema.pre("save", function (next) {
+  const context = (this as any).context as Context;
+  if (!this.createdBy && context?.user) {
+    this.createdBy = new mongoose.Types.ObjectId(context.user._id);
+  }
+  next();
+});
 
 entityGroupSchema.index({ order: 1 });
 entityGroupSchema.index({ deletedAt: 1 });

@@ -13,7 +13,6 @@ console.log("app NODE_ENV:", process.env.NODE_ENV);
 
 const app = express();
 
-// Middleware
 app.use(
   cors({
     origin: ["http://localhost:3000", "http://localhost:5000"],
@@ -34,13 +33,13 @@ app.get("/api/types", (_, res) => {
 // Register TSOA Routes
 RegisterRoutes(app);
 
-// Importa o arquivo de especificação gerado pelo tsoa
+// Import swagger.json
 import swaggerDocument from "../public/swagger.json";
 
-// Configura o documento do swagger
+// Configure swagger.json
 const configuredSwaggerDocument = configureSwaggerDocument(swaggerDocument);
 
-// Configura a rota para a documentação
+// Configure API documentation route
 app.use(
   "/api-docs",
   swaggerUi.serve,

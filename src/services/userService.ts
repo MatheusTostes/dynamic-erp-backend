@@ -1,20 +1,18 @@
-import User from "../models/User";
+import { User as UserModel } from "../models/User";
 import {
-  CreateUserDto,
-  UpdateUserDto,
-  IUser,
   UserQueryOptions,
   PaginatedUserResponse,
+  User,
 } from "../types/userInterfaces";
 
 export class UserService {
-  public async createUser(userData: CreateUserDto): Promise<IUser> {
-    const userExists = await User.findOne({ email: userData.email });
+  public async createUser(userData: User): Promise<User> {
+    const userExists = await UserModel.findOne({ email: userData.email });
     if (userExists) {
       throw new Error("User with this email already exists");
     }
 
-    const user = await User.create(userData);
+    const user = await UserModel.create(userData);
     return user;
   }
 
@@ -26,13 +24,13 @@ export class UserService {
     const skip = (page - 1) * pageSize;
 
     const [users, total] = await Promise.all([
-      User.find()
+      UserModel.find()
         .skip(skip)
         .limit(pageSize)
         .sort({
           [options?.sortBy || "createdAt"]: options?.sortOrder || "desc",
         }),
-      User.countDocuments(),
+      UserModel.countDocuments(),
     ]);
 
     return {
@@ -48,35 +46,30 @@ export class UserService {
     };
   }
 
-  public async getUserById(userId: string): Promise<IUser> {
-    const user = await User.findById(userId);
-    if (!user) {
-      throw new Error("User not found");
-    }
+  public async getUserById(
+    userId: string
+  ): Promise<Omit<User, "password"> | null> {
+    const user = await UserModel.findById(userId);
     return user;
   }
 
   public async updateUser(
     userId: string,
-    userData: UpdateUserDto
-  ): Promise<IUser> {
-    const user = await User.findByIdAndUpdate(
+    userData: User
+  ): Promise<Omit<User, "password"> | null> {
+    const user = await UserModel.findByIdAndUpdate(
       userId,
       { $set: userData },
       { new: true, runValidators: true }
     );
 
-    if (!user) {
-      throw new Error("User not found");
-    }
-
     return user;
   }
 
-  public async deleteUser(userId: string): Promise<void> {
-    const result = await User.findByIdAndDelete(userId);
-    if (!result) {
-      throw new Error("User not found");
-    }
+  public async deleteUser(
+    userId: string
+  ): Promise<Omit<User, "password"> | null> {
+    const result = await UserModel.findByIdAndDelete(userId);
+    return result;
   }
 }

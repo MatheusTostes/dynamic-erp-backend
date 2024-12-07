@@ -12,11 +12,12 @@ import {
 } from "tsoa";
 import { UserService } from "../services/userService";
 import {
-  IUser,
-  CreateUserDto,
-  UpdateUserDto,
+  CreateUserResponse,
   PaginatedUserResponse,
+  UniqueUserResponse,
+  User,
 } from "../types/userInterfaces";
+import { errorHandler, successHandler } from "../libs/responseHandler";
 
 @Route("users")
 @Tags("Users")
@@ -28,36 +29,64 @@ export class UserController extends Controller {
     this.userService = new UserService();
   }
 
-  @Post()
-  @Response<IUser>(201, "Created")
-  public async createUser(@Body() userData: CreateUserDto): Promise<IUser> {
-    return this.userService.createUser(userData);
-  }
-
-  @Get()
-  @Response<PaginatedUserResponse>(200, "Success")
+  @Get("/")
+  @Response(200, "Success")
   public async getAllUsers(): Promise<PaginatedUserResponse> {
-    return this.userService.getAllUsers();
+    const { data, pagination } = await this.userService.getAllUsers();
+    return successHandler(data, pagination);
   }
 
-  @Get("{userId}")
-  @Response<IUser>(200, "Success")
-  public async getUserById(@Path() userId: string): Promise<IUser> {
-    return this.userService.getUserById(userId);
+  @Get("/{userId}")
+  @Response(200, "Success")
+  @Response(404, "Not Found")
+  public async getUserById(
+    @Path() userId: string
+  ): Promise<UniqueUserResponse> {
+    const user = await this.userService.getUserById(userId);
+    if (!user) {
+      this.setStatus(404);
+      return errorHandler(new Error("User not found"));
+    }
+    return successHandler(user);
   }
 
-  @Put("{userId}")
-  @Response<IUser>(200, "Success")
+  @Post("/")
+  @Response(201, "Created")
+  @Response(409, "User already exists")
+  public async createUser(@Body() userData: User): Promise<CreateUserResponse> {
+    try {
+      const user = await this.userService.createUser(userData);
+      return successHandler(user);
+    } catch (error) {
+      this.setStatus(409);
+      return errorHandler(error);
+    }
+  }
+
+  @Put("/{userId}")
+  @Response(200, "Success")
+  @Response(404, "Not Found")
   public async updateUser(
     @Path() userId: string,
-    @Body() userData: UpdateUserDto
-  ): Promise<IUser> {
-    return this.userService.updateUser(userId, userData);
+    @Body() userData: User
+  ): Promise<UniqueUserResponse> {
+    const user = await this.userService.updateUser(userId, userData);
+    if (!user) {
+      this.setStatus(404);
+      return errorHandler(new Error("User not found"));
+    }
+    return successHandler(user);
   }
 
-  @Delete("{userId}")
-  @Response(204, "No Content")
-  public async deleteUser(@Path() userId: string): Promise<void> {
-    await this.userService.deleteUser(userId);
+  @Delete("/{userId}")
+  @Response(200, "Deleted")
+  @Response(404, "Not Found")
+  public async deleteUser(@Path() userId: string): Promise<UniqueUserResponse> {
+    const user = await this.userService.deleteUser(userId);
+    if (!user) {
+      this.setStatus(404);
+      return errorHandler(new Error("User not found"));
+    }
+    return successHandler(user);
   }
 }

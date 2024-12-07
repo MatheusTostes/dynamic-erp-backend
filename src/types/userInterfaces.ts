@@ -1,27 +1,34 @@
-import { Document, Types } from "mongoose";
-
-export interface IUser extends Document {
-  _id: Types.ObjectId;
+export interface User {
+  id?: string;
   email: string;
   password: string;
   name: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
-export interface CreateUserDto {
-  email: string;
-  name: string;
+export interface UserResponse {
+  success: boolean;
+  data: Omit<User, "password">[];
+  message?: string;
 }
 
-export interface UpdateUserDto {
-  email?: string;
-  name?: string;
+export interface UniqueUserResponse {
+  success: boolean;
+  data: Omit<User, "password"> | null;
+  message?: string;
+}
+
+export interface CreateUserResponse {
+  success: boolean;
+  data: Omit<User, "password"> | null;
+  message?: string;
 }
 
 export interface PaginatedUserResponse {
-  data: IUser[];
-  pagination: {
+  success?: boolean;
+  data: Omit<User, "password">[];
+  pagination?: {
     total: number;
     page: number;
     pageSize: number;
@@ -29,6 +36,7 @@ export interface PaginatedUserResponse {
     hasNextPage: boolean;
     hasPreviousPage: boolean;
   };
+  message?: string;
 }
 
 export interface UserQueryOptions {

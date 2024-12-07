@@ -1,14 +1,28 @@
 export interface Record {
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface RecordResponse {
   success: boolean;
   data: Record;
+  message?: string;
 }
 
-export interface PaginatedResponse {
+export interface UniqueRecordResponse {
+  success: boolean;
+  data: Record | null;
+  message?: string;
+}
+
+export interface CreateRecordResponse {
+  success: boolean;
+  data: Record | null;
+  message?: string;
+}
+
+export interface PaginatedRecordResponse {
   data: RecordResponse[];
+  message?: string;
   pagination: {
     total: number;
     page: number;
