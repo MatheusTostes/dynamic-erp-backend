@@ -26,6 +26,11 @@ app.use(express.json());
 // Connect to Database
 connectDB();
 
+// Endpoint to expose TypeScript interfaces
+app.get("/api/types", (_, res) => {
+  res.json(swaggerDocument.components.schemas);
+});
+
 // Register TSOA Routes
 RegisterRoutes(app);
 
