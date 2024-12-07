@@ -6,7 +6,6 @@ interface AuthenticatedRequest extends Request {
   user?: any;
 }
 
-// Unificando authenticateToken com protect
 export const authenticateToken = async (
   req: AuthenticatedRequest,
   res: Response,
@@ -54,7 +53,6 @@ export const authenticateToken = async (
   }
 };
 
-// Alias para manter compatibilidade com código existente
 export const protect = authenticateToken;
 
 export const isAdmin = (

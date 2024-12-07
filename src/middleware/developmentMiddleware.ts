@@ -1,11 +1,9 @@
 import mongoose from "mongoose";
 import { protect, isAdmin } from "./authMiddleware";
 
-// Log inicial para verificar o ambiente
 console.log("Current NODE_ENV:", process.env.NODE_ENV);
 console.log("Is Development?:", process.env.NODE_ENV === "development");
 
-// Middleware condicional baseado no ambiente
 export const conditionalProtect = (req: any, res: any, next: any) => {
   console.log("conditionalProtect called, NODE_ENV:", process.env.NODE_ENV);
   if (process.env.NODE_ENV === "development") {
@@ -24,7 +22,6 @@ export const conditionalIsAdmin = (req: any, res: any, next: any) => {
   return isAdmin(req, res, next);
 };
 
-// Middleware para simular um usuário em desenvolvimento
 export const simulateUser = (req: any, res: any, next: any) => {
   if (process.env.NODE_ENV === "development") {
     req.user = {

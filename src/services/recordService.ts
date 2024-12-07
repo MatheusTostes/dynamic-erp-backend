@@ -51,10 +51,8 @@ export class RecordService {
       return this.getReferencedRecords(entityName, options.referencedBy);
     }
 
-    // Convert query parameters to filters string if not provided
     if (!options.filters) {
       const queryParams: { [key: string]: any } = {};
-      // Get all query parameters except pagination, sorting and referencedBy
       Object.entries(options).forEach(([key, value]) => {
         if (
           value !== undefined &&
@@ -179,7 +177,6 @@ export class RecordService {
     }
 
     try {
-      // First try to parse as JSON
       const parsedFilters = JSON.parse(decodeURIComponent(filters));
       Object.entries(parsedFilters).forEach(([key, value]) => {
         const field = entity.fields.find((f: any) => f.name === key);
@@ -199,7 +196,6 @@ export class RecordService {
         }
       });
     } catch (error) {
-      // If JSON parsing fails, handle as query string parameters
       try {
         const queryParams = new URLSearchParams(filters);
         queryParams.forEach((value, key) => {

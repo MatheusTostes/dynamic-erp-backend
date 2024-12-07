@@ -1,6 +1,5 @@
 import mongoose, { Schema } from "mongoose";
 
-// Schema to store entity definitions
 const dynamicEntitySchema = new mongoose.Schema(
   {
     name: {
@@ -47,7 +46,6 @@ const dynamicEntitySchema = new mongoose.Schema(
   }
 );
 
-// Índice composto para ordenação
 dynamicEntitySchema.index({ group: 1, order: 1 });
 dynamicEntitySchema.index({ deletedAt: 1 });
 
@@ -55,7 +53,6 @@ interface Context {
   user?: { _id: string };
 }
 
-// Add pre-save middleware to set createdBy if not provided
 dynamicEntitySchema.pre("save", function (next) {
   const context = (this as any).context as Context;
   if (!this.createdBy && context?.user) {
@@ -64,7 +61,6 @@ dynamicEntitySchema.pre("save", function (next) {
   next();
 });
 
-// Function to create a dynamic model based on entity definition
 export const createDynamicModel = (entity: any) => {
   const schemaFields: any = {
     deletedAt: { type: Date, default: null },

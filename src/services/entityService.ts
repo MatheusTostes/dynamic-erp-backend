@@ -18,14 +18,12 @@ export class EntityService {
     entity: Entity,
     userId?: string
   ): Promise<EntityResponse> {
-    // Check for both active and soft-deleted entities
     const existingEntity = await DynamicEntity.findOne({
       name: entity.name,
     });
 
     if (existingEntity) {
       if (existingEntity.deletedAt) {
-        // If entity exists but is soft-deleted, hard delete it first
         await DynamicEntity.deleteOne({ name: entity.name });
       } else {
         throw new Error(`Entity with name '${entity.name}' already exists`);
@@ -85,8 +83,6 @@ export class EntityService {
       data: this.mapEntitiesToResponse([updatedEntity]),
     };
   }
-
-  // ... outros métodos do serviço ...
 
   private mapEntitiesToResponse(entities: any[]): any[] {
     return entities.map((entity) => ({

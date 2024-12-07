@@ -26,7 +26,6 @@ export interface AuthError {
   errors?: string[];
 }
 
-// For extending Express Request type with user information
 export interface AuthRequest extends Request {
   user?: {
     id: string;

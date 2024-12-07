@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { validationResult, ValidationChain } from "express-validator";
 
-// Middleware to validate request
 export const validateMiddleware = (validations: ValidationChain[]) => {
   return async (
     req: Request,
@@ -24,9 +23,7 @@ export const validateMiddleware = (validations: ValidationChain[]) => {
   };
 };
 
-// Common validation rules
 export const commonValidations = {
-  // User validations
   userValidation: {
     username: {
       in: ["body"],
@@ -52,7 +49,6 @@ export const commonValidations = {
     },
   },
 
-  // Dynamic Entity validations
   entityValidation: {
     name: {
       in: ["body"],
