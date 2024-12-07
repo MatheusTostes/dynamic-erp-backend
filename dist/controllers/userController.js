@@ -1,91 +1,84 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.userController = void 0;
-const User_1 = require("../models/User");
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const bcryptjs_1 = __importDefault(require("bcryptjs"));
-const generateToken = (id) => {
-    return jsonwebtoken_1.default.sign({ id }, process.env.JWT_SECRET, {
-        expiresIn: "30d",
-    });
+exports.UserController = void 0;
+const tsoa_1 = require("tsoa");
+const userService_1 = require("../services/userService");
+let UserController = class UserController extends tsoa_1.Controller {
+    constructor() {
+        super();
+        this.userService = new userService_1.UserService();
+    }
+    async createUser(userData) {
+        return this.userService.createUser(userData);
+    }
+    async getAllUsers() {
+        return this.userService.getAllUsers();
+    }
+    async getUserById(userId) {
+        return this.userService.getUserById(userId);
+    }
+    async updateUser(userId, userData) {
+        return this.userService.updateUser(userId, userData);
+    }
+    async deleteUser(userId) {
+        await this.userService.deleteUser(userId);
+    }
 };
-exports.userController = {
-    // Register new user
-    register: async (req, res) => {
-        try {
-            const { username, email, password } = req.body;
-            const userExists = await User_1.User.findOne({ $or: [{ email }, { username }] });
-            if (userExists) {
-                res.status(400).json({
-                    success: false,
-                    message: "User already exists",
-                });
-                return;
-            }
-            const user = await User_1.User.create({
-                username,
-                email,
-                password,
-            });
-            res.status(201).json({
-                success: true,
-                data: {
-                    _id: user._id,
-                    username: user.username,
-                    email: user.email,
-                    role: user.role,
-                    token: generateToken(user._id.toString()),
-                },
-            });
-        }
-        catch (error) {
-            res.status(500).json({
-                success: false,
-                message: "Server error",
-                error: error instanceof Error ? error.message : "Unknown error",
-            });
-        }
-    },
-    // Login user
-    login: async (req, res) => {
-        try {
-            const { email, password } = req.body;
-            const user = await User_1.User.findOne({ email });
-            if (!user) {
-                res.status(401).json({
-                    success: false,
-                    message: "Invalid credentials",
-                });
-                return;
-            }
-            const isMatch = await bcryptjs_1.default.compare(password, user.password);
-            if (!isMatch) {
-                res.status(401).json({
-                    success: false,
-                    message: "Invalid credentials",
-                });
-                return;
-            }
-            res.json({
-                success: true,
-                data: {
-                    _id: user._id,
-                    username: user.username,
-                    email: user.email,
-                    role: user.role,
-                    token: generateToken(user._id.toString()),
-                },
-            });
-        }
-        catch (error) {
-            res.status(500).json({
-                success: false,
-                message: "Server error",
-                error: error instanceof Error ? error.message : "Unknown error",
-            });
-        }
-    },
-};
+exports.UserController = UserController;
+__decorate([
+    (0, tsoa_1.Post)(),
+    (0, tsoa_1.Response)(201, "Created"),
+    __param(0, (0, tsoa_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "createUser", null);
+__decorate([
+    (0, tsoa_1.Get)(),
+    (0, tsoa_1.Response)(200, "Success"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "getAllUsers", null);
+__decorate([
+    (0, tsoa_1.Get)("{userId}"),
+    (0, tsoa_1.Response)(200, "Success"),
+    __param(0, (0, tsoa_1.Path)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "getUserById", null);
+__decorate([
+    (0, tsoa_1.Put)("{userId}"),
+    (0, tsoa_1.Response)(200, "Success"),
+    __param(0, (0, tsoa_1.Path)()),
+    __param(1, (0, tsoa_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "updateUser", null);
+__decorate([
+    (0, tsoa_1.Delete)("{userId}"),
+    (0, tsoa_1.Response)(204, "No Content"),
+    __param(0, (0, tsoa_1.Path)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "deleteUser", null);
+exports.UserController = UserController = __decorate([
+    (0, tsoa_1.Route)("users"),
+    (0, tsoa_1.Tags)("Users"),
+    __metadata("design:paramtypes", [])
+], UserController);

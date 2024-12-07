@@ -15,6 +15,7 @@ export interface EntityResponse {
     group: string;
     fields: EntityField[];
   }[];
+  message?: string;
 }
 
 export interface AuthRequest extends Request {

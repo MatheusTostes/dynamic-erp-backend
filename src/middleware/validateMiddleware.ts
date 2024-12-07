@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { validationResult, ValidationChain } from "express-validator";
 
 // Middleware to validate request
-export const validate = (validations: ValidationChain[]) => {
+export const validateMiddleware = (validations: ValidationChain[]) => {
   return async (
     req: Request,
     res: Response,

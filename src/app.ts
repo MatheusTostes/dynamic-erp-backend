@@ -3,10 +3,7 @@ import cors from "cors";
 import helmet from "helmet";
 import dotenv from "dotenv";
 import { connectDB } from "./config/database.js";
-import userRoutes from "./routes/userRoutes";
-import entityRoutes from "./routes/entityManagementRoutes";
-import recordRoutes from "./routes/recordManagementRoutes";
-import entityGroupRoutes from "./routes/entityGroupRoutes";
+import { RegisterRoutes } from "./routes/routes";
 import swaggerUi from "swagger-ui-express";
 import { swaggerOptions, configureSwaggerDocument } from "./config/swagger";
 
@@ -29,11 +26,8 @@ app.use(express.json());
 // Connect to Database
 connectDB();
 
-// Routes
-app.use("/api/users", userRoutes);
-app.use("/api/entities", entityRoutes);
-app.use("/api/entities", recordRoutes);
-app.use("/api/entity-groups", entityGroupRoutes);
+// Register TSOA Routes
+RegisterRoutes(app);
 
 // Importa o arquivo de especificação gerado pelo tsoa
 import swaggerDocument from "../public/swagger.json";

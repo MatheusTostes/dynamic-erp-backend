@@ -8,10 +8,7 @@ const cors_1 = __importDefault(require("cors"));
 const helmet_1 = __importDefault(require("helmet"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const database_js_1 = require("./config/database.js");
-const userRoutes_1 = __importDefault(require("./routes/userRoutes"));
-const entityManagementRoutes_1 = __importDefault(require("./routes/entityManagementRoutes"));
-const recordManagementRoutes_1 = __importDefault(require("./routes/recordManagementRoutes"));
-const entityGroupRoutes_1 = __importDefault(require("./routes/entityGroupRoutes"));
+const routes_1 = require("./routes/routes");
 const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 const swagger_1 = require("./config/swagger");
 dotenv_1.default.config();
@@ -26,11 +23,8 @@ app.use((0, helmet_1.default)());
 app.use(express_1.default.json());
 // Connect to Database
 (0, database_js_1.connectDB)();
-// Routes
-app.use("/api/users", userRoutes_1.default);
-app.use("/api/entities", entityManagementRoutes_1.default);
-app.use("/api/entities", recordManagementRoutes_1.default);
-app.use("/api/entity-groups", entityGroupRoutes_1.default);
+// Register TSOA Routes
+(0, routes_1.RegisterRoutes)(app);
 // Importa o arquivo de especificação gerado pelo tsoa
 const swagger_json_1 = __importDefault(require("../public/swagger.json"));
 // Configura o documento do swagger

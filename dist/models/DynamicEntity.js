@@ -69,7 +69,7 @@ const dynamicEntitySchema = new mongoose_1.default.Schema({
     createdBy: {
         type: mongoose_1.default.Schema.Types.ObjectId,
         ref: "User",
-        required: true,
+        required: false,
     },
     deletedAt: {
         type: Date,
@@ -81,6 +81,14 @@ const dynamicEntitySchema = new mongoose_1.default.Schema({
 // Índice composto para ordenação
 dynamicEntitySchema.index({ group: 1, order: 1 });
 dynamicEntitySchema.index({ deletedAt: 1 });
+// Add pre-save middleware to set createdBy if not provided
+dynamicEntitySchema.pre("save", function (next) {
+    const context = this.context;
+    if (!this.createdBy && context?.user) {
+        this.createdBy = new mongoose_1.default.Types.ObjectId(context.user._id);
+    }
+    next();
+});
 // Function to create a dynamic model based on entity definition
 const createDynamicModel = (entity) => {
     const schemaFields = {

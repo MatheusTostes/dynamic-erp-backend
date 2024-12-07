@@ -1,93 +1,63 @@
-import { Request, Response } from "express";
-import { User } from "../models/User";
-import jwt from "jsonwebtoken";
-import bcrypt from "bcryptjs";
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Route,
+  Tags,
+  Response,
+  Path,
+} from "tsoa";
+import { UserService } from "../services/userService";
+import {
+  IUser,
+  CreateUserDto,
+  UpdateUserDto,
+  PaginatedUserResponse,
+} from "../types/userInterfaces";
 
-const generateToken = (id: string) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET!, {
-    expiresIn: "30d",
-  });
-};
+@Route("users")
+@Tags("Users")
+export class UserController extends Controller {
+  private userService: UserService;
 
-export const userController = {
-  // Register new user
-  register: async (req: Request, res: Response): Promise<void> => {
-    try {
-      const { username, email, password } = req.body;
+  constructor() {
+    super();
+    this.userService = new UserService();
+  }
 
-      const userExists = await User.findOne({ $or: [{ email }, { username }] });
-      if (userExists) {
-        res.status(400).json({
-          success: false,
-          message: "User already exists",
-        });
-        return;
-      }
+  @Post()
+  @Response<IUser>(201, "Created")
+  public async createUser(@Body() userData: CreateUserDto): Promise<IUser> {
+    return this.userService.createUser(userData);
+  }
 
-      const user = await User.create({
-        username,
-        email,
-        password,
-      });
+  @Get()
+  @Response<PaginatedUserResponse>(200, "Success")
+  public async getAllUsers(): Promise<PaginatedUserResponse> {
+    return this.userService.getAllUsers();
+  }
 
-      res.status(201).json({
-        success: true,
-        data: {
-          _id: user._id,
-          username: user.username,
-          email: user.email,
-          role: user.role,
-          token: generateToken(user._id.toString()),
-        },
-      });
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: "Server error",
-        error: error instanceof Error ? error.message : "Unknown error",
-      });
-    }
-  },
+  @Get("{userId}")
+  @Response<IUser>(200, "Success")
+  public async getUserById(@Path() userId: string): Promise<IUser> {
+    return this.userService.getUserById(userId);
+  }
 
-  // Login user
-  login: async (req: Request, res: Response): Promise<void> => {
-    try {
-      const { email, password } = req.body;
+  @Put("{userId}")
+  @Response<IUser>(200, "Success")
+  public async updateUser(
+    @Path() userId: string,
+    @Body() userData: UpdateUserDto
+  ): Promise<IUser> {
+    return this.userService.updateUser(userId, userData);
+  }
 
-      const user = await User.findOne({ email });
-      if (!user) {
-        res.status(401).json({
-          success: false,
-          message: "Invalid credentials",
-        });
-        return;
-      }
-
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) {
-        res.status(401).json({
-          success: false,
-          message: "Invalid credentials",
-        });
-        return;
-      }
-
-      res.json({
-        success: true,
-        data: {
-          _id: user._id,
-          username: user.username,
-          email: user.email,
-          role: user.role,
-          token: generateToken(user._id.toString()),
-        },
-      });
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: "Server error",
-        error: error instanceof Error ? error.message : "Unknown error",
-      });
-    }
-  },
-};
+  @Delete("{userId}")
+  @Response(204, "No Content")
+  public async deleteUser(@Path() userId: string): Promise<void> {
+    await this.userService.deleteUser(userId);
+  }
+}

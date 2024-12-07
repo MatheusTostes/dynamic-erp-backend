@@ -6,44 +6,44 @@
 		"requestBodies": {},
 		"responses": {},
 		"schemas": {
-			"EntityGroup": {
-				"properties": {
-					"id": {
-						"type": "string"
-					},
-					"name": {
-						"type": "string"
-					},
-					"displayName": {
-						"type": "string"
-					},
-					"order": {
-						"type": "number",
-						"format": "double"
-					},
-					"createdAt": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedAt": {
-						"type": "string",
-						"format": "date-time"
-					}
-				},
-				"required": [
-					"name",
-					"displayName"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"EntityGroupResponse": {
+			"AuthResponse": {
 				"properties": {
 					"success": {
 						"type": "boolean"
 					},
 					"data": {
-						"$ref": "#/components/schemas/EntityGroup"
+						"properties": {
+							"token": {
+								"type": "string"
+							},
+							"user": {
+								"properties": {
+									"name": {
+										"type": "string"
+									},
+									"email": {
+										"type": "string"
+									},
+									"id": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"name",
+									"email",
+									"id"
+								],
+								"type": "object"
+							}
+						},
+						"required": [
+							"token",
+							"user"
+						],
+						"type": "object"
+					},
+					"message": {
+						"type": "string"
 					}
 				},
 				"required": [
@@ -51,27 +51,23 @@
 					"data"
 				],
 				"type": "object",
-				"additionalProperties": false
+				"additionalProperties": true
 			},
-			"CreateGroupDTO": {
+			"AuthCredentials": {
 				"properties": {
-					"name": {
+					"email": {
 						"type": "string"
 					},
-					"displayName": {
+					"password": {
 						"type": "string"
-					},
-					"order": {
-						"type": "number",
-						"format": "double"
 					}
 				},
 				"required": [
-					"name",
-					"displayName"
+					"email",
+					"password"
 				],
 				"type": "object",
-				"additionalProperties": false
+				"additionalProperties": true
 			},
 			"EntityField": {
 				"properties": {
@@ -101,7 +97,7 @@
 					"required"
 				],
 				"type": "object",
-				"additionalProperties": false
+				"additionalProperties": true
 			},
 			"EntityResponse": {
 				"properties": {
@@ -136,6 +132,9 @@
 							"type": "object"
 						},
 						"type": "array"
+					},
+					"message": {
+						"type": "string"
 					}
 				},
 				"required": [
@@ -143,7 +142,7 @@
 					"data"
 				],
 				"type": "object",
-				"additionalProperties": false
+				"additionalProperties": true
 			},
 			"Entity": {
 				"properties": {
@@ -177,7 +176,74 @@
 					"fields"
 				],
 				"type": "object",
-				"additionalProperties": false
+				"additionalProperties": true
+			},
+			"EntityGroup": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"displayName": {
+						"type": "string"
+					},
+					"order": {
+						"type": "number",
+						"format": "double"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"name",
+					"displayName"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"EntityGroupResponse": {
+				"properties": {
+					"success": {
+						"type": "boolean"
+					},
+					"data": {
+						"$ref": "#/components/schemas/EntityGroup"
+					}
+				},
+				"required": [
+					"success",
+					"data"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"CreateGroupDTO": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"displayName": {
+						"type": "string"
+					},
+					"order": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"name",
+					"displayName"
+				],
+				"type": "object",
+				"additionalProperties": true
 			},
 			"Record": {
 				"properties": {},
@@ -198,7 +264,7 @@
 					"data"
 				],
 				"type": "object",
-				"additionalProperties": false
+				"additionalProperties": true
 			},
 			"PaginatedResponse": {
 				"properties": {
@@ -249,7 +315,103 @@
 					"pagination"
 				],
 				"type": "object",
-				"additionalProperties": false
+				"additionalProperties": true
+			},
+			"Types.ObjectId": {
+				"type": "string"
+			},
+			"FlattenMaps_Require_id_DocType__": {
+				"properties": {
+					"_id": {
+						"$ref": "#/components/schemas/Types.ObjectId"
+					}
+				},
+				"required": [
+					"_id"
+				],
+				"type": "object"
+			},
+			"IUser": {
+				"$ref": "#/components/schemas/FlattenMaps_Require_id_DocType__"
+			},
+			"CreateUserDto": {
+				"properties": {
+					"email": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"email",
+					"name"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"PaginatedUserResponse": {
+				"properties": {
+					"data": {
+						"items": {
+							"$ref": "#/components/schemas/IUser"
+						},
+						"type": "array"
+					},
+					"pagination": {
+						"properties": {
+							"hasPreviousPage": {
+								"type": "boolean"
+							},
+							"hasNextPage": {
+								"type": "boolean"
+							},
+							"totalPages": {
+								"type": "number",
+								"format": "double"
+							},
+							"pageSize": {
+								"type": "number",
+								"format": "double"
+							},
+							"page": {
+								"type": "number",
+								"format": "double"
+							},
+							"total": {
+								"type": "number",
+								"format": "double"
+							}
+						},
+						"required": [
+							"hasPreviousPage",
+							"hasNextPage",
+							"totalPages",
+							"pageSize",
+							"page",
+							"total"
+						],
+						"type": "object"
+					}
+				},
+				"required": [
+					"data",
+					"pagination"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"UpdateUserDto": {
+				"properties": {
+					"email": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					}
+				},
+				"type": "object",
+				"additionalProperties": true
 			}
 		},
 		"securitySchemes": {}
@@ -264,53 +426,23 @@
 	},
 	"openapi": "3.0.0",
 	"paths": {
-		"/entity-groups": {
-			"get": {
-				"operationId": "GetGroups",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/EntityGroupResponse"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Groups"
-				],
-				"security": [],
-				"parameters": []
-			},
+		"/auth/login": {
 			"post": {
-				"operationId": "CreateGroup",
+				"operationId": "Login",
 				"responses": {
 					"200": {
 						"description": "Ok",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/EntityGroupResponse"
-								}
-							}
-						}
-					},
-					"201": {
-						"description": "Created",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/EntityGroupResponse"
+									"$ref": "#/components/schemas/AuthResponse"
 								}
 							}
 						}
 					}
 				},
 				"tags": [
-					"Groups"
+					"Auth"
 				],
 				"security": [],
 				"parameters": [],
@@ -319,7 +451,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/CreateGroupDTO"
+								"$ref": "#/components/schemas/AuthCredentials"
 							}
 						}
 					}
@@ -369,6 +501,9 @@
 								}
 							}
 						}
+					},
+					"409": {
+						"description": "Entity already exists"
 					}
 				},
 				"tags": [
@@ -464,6 +599,68 @@
 						"application/json": {
 							"schema": {
 								"$ref": "#/components/schemas/Entity"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/entity-groups": {
+			"get": {
+				"operationId": "GetGroups",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/EntityGroupResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Groups"
+				],
+				"security": [],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "CreateGroup",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/EntityGroupResponse"
+								}
+							}
+						}
+					},
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/EntityGroupResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Groups"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateGroupDTO"
 							}
 						}
 					}
@@ -701,11 +898,165 @@
 					}
 				]
 			}
+		},
+		"/users": {
+			"post": {
+				"operationId": "CreateUser",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IUser"
+								}
+							}
+						}
+					},
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IUser"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Users"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateUserDto"
+							}
+						}
+					}
+				}
+			},
+			"get": {
+				"operationId": "GetAllUsers",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PaginatedUserResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Users"
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/users/{userId}": {
+			"get": {
+				"operationId": "GetUserById",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IUser"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Users"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "userId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			},
+			"put": {
+				"operationId": "UpdateUser",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IUser"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Users"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "userId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdateUserDto"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteUser",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"tags": [
+					"Users"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "userId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
 		}
 	},
 	"servers": [
 		{
-			"url": "/"
+			"url": "/api"
 		}
 	]
 }

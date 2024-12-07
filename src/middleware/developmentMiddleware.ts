@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { protect, isAdmin } from "./auth";
+import { protect, isAdmin } from "./authMiddleware";
 
 // Log inicial para verificar o ambiente
 console.log("Current NODE_ENV:", process.env.NODE_ENV);
