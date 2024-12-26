@@ -6,7 +6,6 @@ import { connectDB } from "./config/database.js";
 import { RegisterRoutes } from "./routes/routes";
 import swaggerUi from "swagger-ui-express";
 import { swaggerOptions, configureSwaggerDocument } from "./config/swagger";
-import { generateTypeDefinitions } from "./services/typeDefinitionService";
 
 dotenv.config();
 
@@ -26,16 +25,6 @@ app.use(express.json());
 // Connect to Database
 connectDB();
 
-// Endpoint to expose TypeScript interfaces as string
-app.get("/api/types", (_, res) => {
-  const interfaceDefinitions = generateTypeDefinitions(swaggerDocument);
-  res.setHeader("Content-Type", "text/plain");
-  res.send(interfaceDefinitions);
-});
-
-// Register TSOA Routes
-RegisterRoutes(app);
-
 // Import swagger.json
 import swaggerDocument from "../public/swagger.json";
 
@@ -48,6 +37,9 @@ app.use(
   swaggerUi.serve,
   swaggerUi.setup(configuredSwaggerDocument, swaggerOptions)
 );
+
+// Register TSOA Routes
+RegisterRoutes(app);
 
 const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, () => {
