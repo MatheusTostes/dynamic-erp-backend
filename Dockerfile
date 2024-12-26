@@ -47,4 +47,4 @@ RUN apk add --no-cache tini
 ENTRYPOINT ["/sbin/tini", "--"]
 
 # Start the application
-CMD ["node", "dist/app.js"]
+CMD ["node", "--unhandled-rejections=strict", "dist/app.js"]
