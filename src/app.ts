@@ -38,7 +38,7 @@ app.use(
   swaggerUi.setup(configuredSwaggerDocument, swaggerOptions)
 );
 
-app.get("/", (req, res) => {
+app.get("/hello", (req, res) => {
   res.send("Hello World");
 });
 
