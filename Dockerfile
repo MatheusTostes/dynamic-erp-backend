@@ -31,8 +31,20 @@ RUN npm ci --only=production
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/public ./public
 
+# Set default environment variables
+ENV NODE_ENV=development \
+  PORT=5000
+
+# Create a non-root user
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+USER appuser
+
 # Expose the port the app runs on
 EXPOSE 5000
 
+# Use tini as init process
+RUN apk add --no-cache tini
+ENTRYPOINT ["/sbin/tini", "--"]
+
 # Start the application
-CMD ["npm", "start"]
+CMD ["node", "dist/app.js"]
