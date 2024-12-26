@@ -21,9 +21,6 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Install tini first (before switching users)
-RUN apk add --no-cache tini
-
 # Copy package files
 COPY package*.json ./
 
@@ -50,8 +47,5 @@ USER appuser
 # Expose the port the app runs on
 EXPOSE 5000
 
-# Use tini as init process
-ENTRYPOINT ["/sbin/tini", "--"]
-
 # Start the application
-CMD ["node", "--unhandled-rejections=strict", "dist/app.js"]
+CMD ["node", "--unhandled-rejections=strict", "--max-old-space-size=2048", "dist/app.js"]
