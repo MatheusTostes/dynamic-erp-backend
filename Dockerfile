@@ -21,6 +21,9 @@ FROM node:20-alpine
 
 WORKDIR /app
 
+# Install tini first (before switching users)
+RUN apk add --no-cache tini
+
 # Copy package files
 COPY package*.json ./
 
@@ -37,13 +40,17 @@ ENV NODE_ENV=development \
 
 # Create a non-root user
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+# Change ownership of the app directory
+RUN chown -R appuser:appgroup /app
+
+# Switch to non-root user
 USER appuser
 
 # Expose the port the app runs on
 EXPOSE 5000
 
 # Use tini as init process
-RUN apk add --no-cache tini
 ENTRYPOINT ["/sbin/tini", "--"]
 
 # Start the application
