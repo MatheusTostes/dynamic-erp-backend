@@ -38,6 +38,10 @@ app.use(
   swaggerUi.setup(configuredSwaggerDocument, swaggerOptions)
 );
 
+app.get("/", (req, res) => {
+  res.send("Hello World");
+});
+
 // Register TSOA Routes
 RegisterRoutes(app);
 
