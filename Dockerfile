@@ -33,7 +33,7 @@ COPY --from=builder /app/public ./public
 
 # Set default environment variables
 ENV NODE_ENV=development \
-  PORT=5000
+  PORT=3000
 
 # Create a non-root user
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
@@ -45,7 +45,7 @@ RUN chown -R appuser:appgroup /app
 USER appuser
 
 # Expose the port the app runs on
-EXPOSE 5000
+EXPOSE 3000
 
 # Start the application
 CMD ["node", "--unhandled-rejections=strict", "--max-old-space-size=2048", "dist/app.js"]
